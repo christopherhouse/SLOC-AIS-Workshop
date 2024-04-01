@@ -1,0 +1,103 @@
+parameters:
+- name: serviceConnectionName
+  type: string
+- name: environmentName
+  type: string
+- name: resourceGroupName
+  type: string
+- name: deploymentRegion
+  type: string
+  default: 'eastus'
+- name: importApimApi
+  type: boolean
+  default: false
+
+stages:
+  - stage: Deploy_to__${{ parameters.environmentName }}
+    displayName: Deploy to ${{ parameters.environmentName }}
+    jobs:
+    - deployment: ${{ parameters.environmentName }}_Deployment
+      displayName: ${{ parameters.environmentName }} Deployment
+      pool:
+        vmImage: ubuntu-latest
+      environment: ${{ parameters.environmentName }}
+      variables:
+        infraTemplate: $(Pipeline.Workspace)/infrastructure/bicep/main.bicep
+        parameterFile: $(Pipeline.Workspace)/infrastructure/bicep/parameters/main.${{ parameters.environmentName }}.json
+        variableScriptFile: $(Pipeline.Workspace)/scripts/Set-PipelineVariablesFromDeploymentOutput.ps1
+        functionPackage: $(Pipeline.Workspace)/functionapp/functionapp.zip
+        setFunctionSecretScriptFile: $(Pipeline.Workspace)/scripts/set-function-key-secret.sh
+        importProductOrderingScriptFile: $(Pipeline.Workspace)/scripts/Import-ProductOrderingApi.ps1
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadPipelineArtifact@2
+              displayName: Download Infrastructure Artifact
+              inputs:
+                artifact: 'infrastructure'
+            
+            - task: DownloadPipelineArtifact@2
+              displayName: Download Pipeline Scritps Artifact
+              inputs:
+                artifact: scripts
+            
+            - task: DownloadPipelineArtifact@2
+              displayName: Download Function App Artifact
+              inputs:
+                artifact: functionapp
+            
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: Deploy Infrastructure to ${{ parameters.environmentName }}
+              inputs:
+                deploymentScope: Resource Group
+                azureResourceManagerConnection: ${{ parameters.serviceConnectionName }}
+                resourceGroupName: ${{ parameters.resourceGroupName }}
+                csmFile: $(infraTemplate)
+                csmParametersFile: $(parameterFile)
+                deploymentName: $(Build.BuildId)
+                overrideParameters: '-buildId $(Build.BuildId)'
+                location: ${{ parameters.deploymentRegion }}
+                deploymentOutputs: infraOutputs
+            
+            - task: PowerShell@2
+              displayName: Set Variables from Deployment Output
+              inputs:
+                filePath: $(variableScriptFile)
+                arguments: -armOutputString '$(infraOutputs)'
+            
+            - task: AzureFunctionApp@1
+              displayName: Deploy Order Fulfillment Function App
+              inputs:
+                azureSubscription: ${{ parameters.serviceConnectionName }}
+                appType: functionAppLinux
+                appName: $(functionAppName)
+                package: $(functionPackage)
+
+            - task: AzureCLI@2
+              displayName: Set Function App Key
+              inputs:
+                azureSubscription: ${{ parameters.serviceConnectionName }}
+                scriptPath: $(setFunctionSecretScriptFile)
+                scriptType: bash
+                scriptLocation: scriptPath
+                arguments: ${{ parameters.resourceGroupName }} $(functionAppName) $(keyVaultName)
+            
+            # - task: AzurePowershell@5
+            #   displayName: Import Product Ordering OpenAPI Spec into APIM
+            #   inputs:
+            #     azureSubscription: ${{ parameters.serviceConnectionName }}
+            #     scriptType: FilePath
+            #     scriptPath: $(importProductOrderingScriptFile)
+            #     scriptArguments: -resourceGroupName ${{ parameters.resourceGroupName }} -apiManagementName $(apimName) -functionAppHostName $(functionAppHostName) -functionAppResourceId $(functionAppResourceId) -apiVersionIdentifier "2024-01-03" -functionAppKeyKeyVaultSecretUri $(functionAppKeyKeyVaultSecretUri) -userAssignedManagedIdentityClientId $(apimUserAssignedManagedIdentityClientId)
+            #     preferredAzurePowerShellVersion: '11.2.0'
+
+            # - task: AzureCLI@2
+            #   displayName: Import Product Ordering OpenAPI Spec into APIM
+            #   condition: eq('${{ parameters.importApimApi }}', true)
+            #   inputs:
+            #     azureSubscription: ${{ parameters.serviceConnectionName }}
+            #     scriptType: pscore
+            #     scriptLocation: scriptPath
+            #     scriptPath: $(importProductOrderingScriptFile)
+            #     arguments: -resourceGroupName ${{ parameters.resourceGroupName }} -apiManagementName $(apimName) -functionAppHostName $(functionAppHostName) -functionAppResourceId $(functionAppResourceId) -apiVersionIdentifier "2024-01-03" -functionAppKeyKeyVaultSecretUri $(functionAppKeyKeyVaultSecretUri) -userAssignedManagedIdentityClientId $(apimUserAssignedManagedIdentityClientId)
