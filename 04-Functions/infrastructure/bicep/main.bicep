@@ -43,7 +43,7 @@ param sendApprovalTopicName string
 param allCreditApprovalsSubscription string
 param pipelineServicePrincipalId string
 
-param buildId int = 0
+param buildId string = 'undefiend'
 
 var maxContainerRUs = 1000
 var defaultTopicSqlFilter = '1=1'
@@ -83,7 +83,6 @@ var shipmentTopicDeploymentName = '${shipmentTopicName}-${buildId}'
 var leasesContainerDeploymentName = '${cosmosLeaseContainerName}-${buildId}'
 var statusNotificationTopicDeploymentName = '${statusNotificationTopicName}-${buildId}'
 var statusNotificationTopicSubscriptionDeploymentName = '${statusNotificationTopicSubscriptionName}-${buildId}'
-var loadTestingDeploymentName = '${loadTestingName}-${buildId}'
 var sendApprovalTopicDeploymentName = '${sendApprovalTopicName}-${buildId}'
 var allCreditApprovalsSubscriptionDeploymentName = '${allCreditApprovalsSubscription}-${buildId}'
 var apimDeploymentName = '${apimName}-${buildId}'
@@ -353,15 +352,6 @@ module statusSub './modules/serviceBus/serviceBusTopicSubscription.bicep' = {
     sqlFilterExpression: defaultTopicSqlFilter
   }
 }
-
-// This thing is failing to deploy for some reason so removing for now
-// module alt './modules/azureLoadTesting/azureLoadTesting.bicep' = {
-//   name: loadTestingDeploymentName
-//   params: {
-//     loadTestsName: loadTestingName
-//     location: location
-//   }
-// }
 
 module sendApprovalEventTopic './modules/serviceBus/serviceBusTopic.bicep' = {
   name: sendApprovalTopicDeploymentName

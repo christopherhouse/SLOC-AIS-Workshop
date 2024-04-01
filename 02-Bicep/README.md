@@ -18,41 +18,14 @@ The `main.parameters.json` file contains the parameters for the Bicep template. 
 
 The parameters defined on the bicep template include:
 
-| Parameter | Type | Default Value | Allowed Values |
-| --- | --- | --- | --- |
-| `deploymentDate` | string | `utcNow()` | - |
-| `workloadPrefix` | string | - | - |
-| `workloadName` | string | - | - |
-| `environmentName` | string | - | - |
-| `location` | string | - | - |
-| `apimPublisherEmail` | string | - | - |
-| `apimPublisherName` | string | - | - |
-| `apimSkuCapacity` | int | - | - |
-| `apimSkuName` | string | - | 'Developer', 'Standard', 'Premium', 'Basic', 'Consumption' |
-| `serviceBusSku` | string | - | 'Basic', 'Standard', 'Premium' |
-| `maxTopicSize` | int | - | - |
-| `ordersTopicName` | string | - | - |
-| `ordersTopicSubscriptionName` | string | - | - |
-| `ordersForApprovalSubscriptionName` | string | - | - |
-| `ordersTopicSqlFilter` | string | - | - |
-| `ordersForApprovalSqlFilter` | string | - | - |
-| `fulfillmentTopicName` | string | - | - |
-| `keyVaultAdminIdentities` | array | `[]` | - |
-| `cosmosDbDatabaseName` | string | - | - |
-| `ordersCosmosContainerName` | string | - | - |
-| `orderContainerPartitionKey` | string | - | - |
-| `fulfillmentTopicSubscriptionName` | string | - | - |
-| `shipmentTopicName` | string | - | - |
-| `shipmentTopicSubscriptionName` | string | - | - |
-| `maxWorkDelayInMilliseconds` | int | `100` | - |
-| `cosmosLeaseContainerName` | string | - | - |
-| `statusNotificationTopicName` | string | - | - |
-| `statusNotificationTopicSubscriptionName` | string | - | - |
-| `webHookNotificationUrl` | string | - | - |
-| `sendApprovalTopicName` | string | - | - |
-| `allCreditApprovalsSubscription` | string | - | - |
-| `pipelineServicePrincipalId` | string | - | - |
-| `buildId` | int | `0` | - |
+| Parameter Name | Data Type | Description | Default Value | Allowed Values |
+| --- | --- | --- | --- | --- |
+| `webAppName` | string | The name of the web app resource to create. Note a unique string will be appended to the name | - | - |
+| `sku` | string | The SKU of the app service plan | - | 'S1', 'B1', 'F1' |
+| `linuxFxVersion` | string | The runtime to be used on the web app | - | - |
+| `location` | string | The Azure region where resources will be deployed. Defaults to the resource group location | `resourceGroup().location` | - |
+| `repositoryUrl` | string | The URL of the repository to deploy the web app from | 'https://github.com/Azure-Samples/nodejs-docs-hello-world' | - |
+| `branch` | string | The branch of the repository to deploy the web app from | - | - |
 
 ## 🚀 Deployment
 

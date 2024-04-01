@@ -2,7 +2,7 @@ param keyVaultName string
 param appInsightsName string
 param cosmosDbAccountName string
 param serviceBusNamespaceId string
-param buildId int
+param buildId string
 
 var serviceBus = '${serviceBusNamespaceId}/AuthorizationRules/RootManageSharedAccessKey'
 var serviceBusConnectionString = listKeys(serviceBus, '2022-10-01-preview').primaryConnectionString
