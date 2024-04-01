@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "value": "sloc-ais-ws"
+    },
+    "sku": {
+      "value": "S1"
+    },
+    "linuxFxVersion": {
+      "value": "node|14-lts"
+    },
+      "location": {
+        "value": "westus"
+    },
+    "repositoryUrl": {
+      "value": "https://github.com/Azure-Samples/nodejs-docs-hello-world"
+    },
+    "branch": {
+      "value": "main"
+    }
+  }
+}
