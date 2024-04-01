@@ -1,0 +1,98 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workloadPrefix": {
+      "value": "sloc"
+    },
+    "workloadName": {
+      "value": "cmh-apim"
+    },
+    "environmentName": {
+      "value": "dev"
+    },
+    "location": {
+      "value": "westus"
+    },
+    "apimPublisherEmail": {
+      "value": "xxx@yyzzyy.com.us"
+    },
+    "apimPublisherName": {
+      "value": "Some One"
+    },
+    "apimSkuName": {
+      "value": "Developer"
+    },
+    "apimSkuCapacity": {
+      "value": 1
+    },
+    "serviceBusSku": {
+      "value": "Standard"
+    },
+    "maxTopicSize": {
+      "value": 2048
+    },
+    "ordersTopicName": {
+      "value": "received-orders"
+    },
+    "ordersTopicSubscriptionName": {
+      "value": "auto-approved-orders"
+    },
+    "ordersForApprovalSubscriptionName": {
+      "value": "orders-requiring-approval"
+    },
+    "ordersTopicSqlFilter": {
+      "value": "user.orderTotal <= 1000"
+    },
+    "ordersForApprovalSqlFilter": {
+      "value": "user.orderTotal >= 1000"
+    },
+    "fulfillmentTopicName": {
+      "value": "orders-for-fulfillment"
+    },
+    "keyVaultAdminIdentities": {
+      "value": [
+        "c9be89aa-0783-4310-b73a-f81f4c3f5407"
+      ]
+    },
+    "cosmosDbDatabaseName": {
+      "value": "order-processing"
+    },
+    "ordersCosmosContainerName": {
+      "value": "orders"
+    },
+    "orderContainerPartitionKey": {
+      "value": "/customerId"
+    },
+    "fulfillmentTopicSubscriptionName": {
+      "value": "all-approved-orders"
+    },
+    "shipmentTopicName": {
+      "value": "ready-for-shipment"
+    },
+    "shipmentTopicSubscriptionName": {
+      "value": "all-orders-for-shipment"
+    },
+    "cosmosLeaseContainerName": {
+      "value": "leases"
+    },
+    "statusNotificationTopicName": {
+      "value": "status-notifications"
+    },
+    "statusNotificationTopicSubscriptionName": {
+      "value": "all-status-notifications"
+    },
+    "webHookNotificationUrl": {
+      "value": "https://webhook.site/cfa31dea-b33e-442f-b7d4-d52bcb8b4382/"
+    },
+    "sendApprovalTopicName": {
+      "value": "send-credit-approval"
+    },
+    "allCreditApprovalsSubscription": {
+      "value": "all-messages"
+    },
+    "pipelineServicePrincipalId": {
+      "value": "90294e9c-ced6-4a8e-9424-934a7e58558e"
+    }
+  }
+}
