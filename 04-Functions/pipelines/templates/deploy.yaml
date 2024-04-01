@@ -8,9 +8,6 @@ parameters:
 - name: deploymentRegion
   type: string
   default: 'eastus'
-- name: importApimApi
-  type: boolean
-  default: false
 
 stages:
   - stage: Deploy_to__${{ parameters.environmentName }}

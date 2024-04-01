@@ -10,24 +10,25 @@ trigger:
      - '*'
 pr: none
 
+variables:
+  - group: 'sloc-ais-ws'
+
 stages:
  - stage: Build
    displayName: Build Infrastructure and Code
    jobs:
    - template: templates/build.yaml
      parameters:
-       serviceConnectionName: ${{ parameters.serviceConnectionName }}
+       serviceConnectionName: $(service-connection-name) # ${{ parameters.serviceConnectionName }}
 
  - template: 04-Functions/pipelines/templates/deploy.yaml
    parameters:
-     serviceConnectionName: ${{ parameters.serviceConnectionName }}
+     serviceConnectionName: $(service-connection-name)
      environmentName: dev
-     resourceGroupName: APIM-DEMO-RG
-     importApimApi: true
+     resourceGroupName: $(dev-resource-group)
 
  - template: 04-Functions/pipelines/templates/deploy.yaml
    parameters:
-     serviceConnectionName: ${{ parameters.serviceConnectionName }}
+     serviceConnectionName: $(service-connection-name)
      environmentName: qa
-     resourceGroupName: APIM-DEMO-RG-QA
-     importApimApi: false
+     resourceGroupName: $(qa-resource-group)
