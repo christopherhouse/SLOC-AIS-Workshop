@@ -15,9 +15,9 @@ jobs:
   displayName: Build Bicep and Function App
   variables:
     functionPublishPath: '$(build.artifactstagingdirectory)/functionapp'
-    armParametersScriptPath: $(System.DefaultWorkingDirectory)/.pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
-    mainBicepPath: $(System.DefaultWorkingDirectory)/.infrastructure/bicep/main.bicep
-    functionSolutionPath: $(System.DefaultWorkingDirectory)/function-app/FunctionsOrderFulfillmentDemo.sln
+    armParametersScriptPath: $(System.DefaultWorkingDirectory)/04-Functions/pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
+    mainBicepPath: $(System.DefaultWorkingDirectory)/04-Functions/infrastructure/bicep/main.bicep
+    functionSolutionPath: $(System.DefaultWorkingDirectory)/04-Functions/FunctionsOrderFulfillmentDemo.sln
   steps:
     - task: Bash@3
       displayName: Build Infrastructure Templates
@@ -29,7 +29,7 @@ jobs:
     - task: PowerShell@2
       displayName: Generate ARM parameters from *.bicepparam
       inputs:
-        workingDirectory: $(System.DefaultWorkingDirectory)/.infrastructure/bicep/parameters/
+        workingDirectory: $(System.DefaultWorkingDirectory)/04-Functions/infrastructure/bicep/parameters/
         filePath: $(armParametersScriptPath)
 
     - task: UseDotNet@2
@@ -54,18 +54,11 @@ jobs:
         zipAfterPublish: true
         workingDirectory: './'
 
-    # - task: MicrosoftSecurityDevOps@1
-    #   displayName: 'Microsoft Security DevOps'
-    #   inputs:
-    #     categories: 'IaC'
-    #     tools: 'binskim'
-        #config: '$(System.DefaultWorkingDirectory)/.infrastructure/pipelines/templates/secdevops-extension.json'
-
     - task: PublishPipelineArtifact@1
       displayName: Publish Infrastructure Artifacts
       inputs:
         artifactName: infrastructure
-        targetPath: $(System.DefaultWorkingDirectory)/.infrastructure/
+        targetPath: $(System.DefaultWorkingDirectory)/04-Functions/infrastructure/
     
     - task: PublishPipelineArtifact@1
       displayName: Publish Function App Artifact
@@ -77,4 +70,4 @@ jobs:
       displayName: Publish Pipeline Scripts
       inputs:
         artifactName: scripts
-        targetPath: $(System.DefaultWorkingDirectory)/.pipelines/scripts/
+        targetPath: $(System.DefaultWorkingDirectory)/04-Functions/pipelines/scripts/

@@ -18,14 +18,14 @@ stages:
      parameters:
        serviceConnectionName: ${{ parameters.serviceConnectionName }}
 
- - template: templates/deploy.yaml
+ - template: 04-Functions/pipelines/templates/deploy.yaml
    parameters:
      serviceConnectionName: ${{ parameters.serviceConnectionName }}
      environmentName: dev
      resourceGroupName: APIM-DEMO-RG
      importApimApi: true
 
- - template: templates/deploy.yaml
+ - template: 04-Functions/pipelines/templates/deploy.yaml
    parameters:
      serviceConnectionName: ${{ parameters.serviceConnectionName }}
      environmentName: qa
