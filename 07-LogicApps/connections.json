@@ -1,0 +1,25 @@
+{
+  "serviceProviderConnections": {
+    "serviceBus": {
+      "parameterValues": {
+        "connectionString": "@appsetting('serviceBus_connectionString')"
+      },
+      "parameterSetName": "connectionString",
+      "serviceProvider": {
+        "id": "/serviceProviders/serviceBus"
+      },
+      "displayName": "sbConnection"
+    },
+    "azureTables": {
+      "parameterValues": {
+        "connectionString": "@appsetting('azureTables_connectionString')"
+      },
+      "parameterSetName": "connectionString",
+      "serviceProvider": {
+        "id": "/serviceProviders/azureTables"
+      },
+      "displayName": "tables"
+    }
+  },
+  "managedApiConnections": {}
+}

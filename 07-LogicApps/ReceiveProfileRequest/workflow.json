@@ -1,0 +1,159 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_variable_-_statusCode": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "statuCode",
+                            "type": "integer",
+                            "value": 200
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_variable_-_responseMessage": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "responseMessage",
+                            "type": "string",
+                            "value": "{\n  \"message\": \"Request submitted successfully\"\n}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_statusCode": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Try": {
+                "type": "Scope",
+                "actions": {
+                    "Send_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "profile-requests",
+                                "message": {
+                                    "contentData": "@triggerBody()",
+                                    "contentType": "application/json",
+                                    "userProperties": {
+                                        "region": "@{triggerBody()?['region']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "serviceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_-_responseMessage": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Catch": {
+                "type": "Scope",
+                "actions": {
+                    "Set_variable_-_statusCode": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "statuCode",
+                            "value": 500
+                        }
+                    },
+                    "Set_variable_responseMessage": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "responseMessage",
+                            "value": "{\n  \"message\": \"The operation failed, try again later\"\n}"
+                        },
+                        "runAfter": {
+                            "Set_variable_-_statusCode": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "FAILED"
+                    ]
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": "@variables('statuCode')",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": "@variables('responseMessage')"
+                },
+                "runAfter": {
+                    "Catch": [
+                        "SUCCEEDED",
+                        "SKIPPED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "method": "POST",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "subject": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "region": {
+                                "type": "string"
+                            },
+                            "profileData": {
+                                "type": "object",
+                                "properties": {
+                                    "prefix": {
+                                        "type": "string"
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "sufix": {
+                                        "type": "string"
+                                    },
+                                    "preferredName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

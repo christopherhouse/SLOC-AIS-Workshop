@@ -1,0 +1,97 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerBody()?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "subject": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "region": {
+                                "type": "string"
+                            },
+                            "profileData": {
+                                "type": "object",
+                                "properties": {
+                                    "prefix": {
+                                        "type": "string"
+                                    },
+                                    "firstName": {
+                                        "type": "string"
+                                    },
+                                    "lastName": {
+                                        "type": "string"
+                                    },
+                                    "suffix": {
+                                        "type": "string"
+                                    },
+                                    "preferredName": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Insert_or_Update_Entity": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "tableName": "europe",
+                        "entity": {
+                            "PartitionKey": "@{body('Parse_JSON')?['subject']}",
+                            "RowKey": "@{body('Parse_JSON')?['region']}",
+                            "prefix": "@{body('Parse_JSON')?['profileData']?['prefix']}",
+                            "firstname": "@{body('Parse_JSON')?['profileData']?['firstName']}",
+                            "lastname": "@{body('Parse_JSON')?['profileData']?['lastName']}",
+                            "name": "@{body('Parse_JSON')?['name']}",
+                            "suffix": "@{body('Parse_JSON')?['profileData']?['suffix']}",
+                            "preferredname": "@{body('Parse_JSON')?['profileData']?['preferredName']}"
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "azureTables",
+                        "operationId": "upsertEntity",
+                        "serviceProviderId": "/serviceProviders/azureTables"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_messages_are_available_in_a_topic": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "profile-requests",
+                        "subscriptionName": "profile-requests-eu",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "serviceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        }
+    },
+    "kind": "Stateful"
+}
