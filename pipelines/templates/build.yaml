@@ -15,9 +15,9 @@ jobs:
   displayName: Build Bicep and Function App
   variables:
     functionPublishPath: '$(build.artifactstagingdirectory)/functionapp'
-    armParametersScriptPath: $(System.DefaultWorkingDirectory)/.pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
+    armParametersScriptPath: $(System.DefaultWorkingDirectory)/pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
     mainBicepPath: $(System.DefaultWorkingDirectory)/04-Functions/infrastructure/bicep/main.bicep
-    functionSolutionPath: $(System.DefaultWorkingDirectory)/04-Functions/FunctionsOrderFulfillmentDemo/FunctionsOrderFulfillmentDemo.sln
+    functionSolutionPath: $(System.DefaultWorkingDirectory)/04-Functions/FunctionsOrderFulfillmentDemo.sln
   steps:
     - task: Bash@3
       displayName: Build Infrastructure Templates
@@ -39,7 +39,7 @@ jobs:
         version: '6.x'
 
     - script: |
-        dotnet restore
+        dotnet restore $(functionSolutionPath)
         dotnet build $(functionSolutionPath) --configuration Release
       displayName: Build Function App
     
