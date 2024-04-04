@@ -39,7 +39,7 @@ jobs:
         version: '6.x'
 
     - script: |
-        dotnet restore
+        dotnet restore $(functionSolutionPath)
         dotnet build $(functionSolutionPath) --configuration Release
       displayName: Build Function App
     
