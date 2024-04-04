@@ -15,7 +15,7 @@ jobs:
   displayName: Build Bicep and Function App
   variables:
     functionPublishPath: '$(build.artifactstagingdirectory)/functionapp'
-    armParametersScriptPath: $(System.DefaultWorkingDirectory)/.pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
+    armParametersScriptPath: $(System.DefaultWorkingDirectory)/pipelines/scripts/Add-ArmParametersFromBicepparamFiles.ps1
     mainBicepPath: $(System.DefaultWorkingDirectory)/04-Functions/infrastructure/bicep/main.bicep
     functionSolutionPath: $(System.DefaultWorkingDirectory)/04-Functions/FunctionsOrderFulfillmentDemo/FunctionsOrderFulfillmentDemo.sln
   steps:
