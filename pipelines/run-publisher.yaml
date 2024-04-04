@@ -1,0 +1,78 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+    - tools/*
+
+parameters:
+  - name: API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH
+    type: string
+    displayName: Folder where the artifacts reside
+    default: "artifacts"
+  - name: COMMIT_ID
+    type: string
+    displayName: Choose "publish-all-artifacts-in-repo" only when you want to force republishing all artifacts (e.g. after build failure). Otherwise stick with the default behavior of "publish-artifacts-in-last-commit"
+    default: publish-all-artifacts-in-repo
+    values:
+      - publish-artifacts-in-last-commit
+      - publish-all-artifacts-in-repo
+
+variables:
+  - group: cmhtst-apim-automation
+  - name: System.Debug
+    value: false
+stages:
+  - stage: push_changes_to_DEV_APIM
+    displayName: Push changes to DEV APIM
+    jobs:
+      - deployment: push_changes_to_DEV_APIM
+        displayName: Push changes to DEV APIM
+        variables:
+          #setting the testSecretValue to the prod resource group name as an example
+          testSecretValue: $(RESOURCE_GROUP_NAME)
+          appInsightsKey: $(APPINSIGHTS_INSTRUMENTATIONKEY_DEV)
+        pool:
+          vmImage: ubuntu-latest
+        # creates an environment if it doesn't exist
+        environment: 'dev'
+        strategy:
+          # default deployment strategy, more coming...
+          runOnce:
+            deploy:
+               steps:
+                 - template: run-publisher-with-env.yaml
+                   parameters:
+                     API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: ${{ parameters.API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH }}
+                     RESOURCE_GROUP_NAME : $(RESOURCE_GROUP_NAME)
+                     CONFIGURATION_YAML_PATH:  $(Build.SourcesDirectory)/configuration.dev.yaml
+                     ENVIRONMENT: "dev"
+                     COMMIT_ID: ${{ parameters.COMMIT_ID }}
+
+  - stage: push_changes_to_QA_APIM
+    displayName: Push changes to QA APIM
+    jobs:
+      - deployment: push_changes_to_QA_APIM
+        displayName: Push changes to QA APIM
+        variables:
+          #setting the testSecretValue to the prod resource group name as an example
+          testSecretValue: $(RESOURCE_GROUP_NAME_QA)
+          appInsightsKey: $(APPINSIGHTS_INSTRUMENTATIONKEY_QA)
+        pool:
+          vmImage: ubuntu-latest
+        # creates an environment if it doesn't exist
+        environment: 'QA'
+        strategy:
+          # default deployment strategy, more coming...
+          runOnce:
+            deploy:
+               steps:
+                 - template: run-publisher-with-env.yaml
+                   parameters:
+                     API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH: ${{ parameters.API_MANAGEMENT_SERVICE_OUTPUT_FOLDER_PATH }}
+                     RESOURCE_GROUP_NAME : $(RESOURCE_GROUP_NAME_QA)
+                     CONFIGURATION_YAML_PATH:  $(Build.SourcesDirectory)/configuration.qa.yaml
+                     ENVIRONMENT: "QA"
+                     COMMIT_ID: ${{ parameters.COMMIT_ID }}
+              
