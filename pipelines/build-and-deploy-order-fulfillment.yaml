@@ -22,12 +22,12 @@ stages:
    parameters:
      serviceConnectionName: ${{ parameters.serviceConnectionName }}
      environmentName: dev
-     resourceGroupName: APIM-DEMO-RG
+     resourceGroupName: SLOC-AIS
      importApimApi: true
 
- - template: templates/deploy.yaml
-   parameters:
-     serviceConnectionName: ${{ parameters.serviceConnectionName }}
-     environmentName: qa
-     resourceGroupName: APIM-DEMO-RG-QA
-     importApimApi: false
+#  - template: templates/deploy.yaml
+#    parameters:
+#      serviceConnectionName: ${{ parameters.serviceConnectionName }}
+#      environmentName: qa
+#      resourceGroupName: APIM-DEMO-RG-QA
+#      importApimApi: false
